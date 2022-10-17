@@ -1,3 +1,7 @@
 # 041-111project\
 
-National Ilan University
+NIU CSIE 111 IDAL lab independent project
+
+Data : CBIS-DDSM Cropped Image
+
+TeamMember :
