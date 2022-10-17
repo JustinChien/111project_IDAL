@@ -1,4 +1,4 @@
-# 041-111project\
+# 041-111project
 
 NIU CSIE 111 IDAL lab independent project
 
