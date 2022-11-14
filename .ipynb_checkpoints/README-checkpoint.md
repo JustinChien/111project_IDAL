@@ -1,3 +1,7 @@
-# 041-111project\
+# 041-111project
 
-National Ilan University
+NIU CSIE 111 IDAL lab 專題
+
+Data : CBIS-DDSM Cropped Image
+
+TeamMember :
