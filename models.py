@@ -7,7 +7,8 @@ from tensorflow.keras.preprocessing import image
 from sklearn.metrics import multilabel_confusion_matrix,classification_report,confusion_matrix
 import matplotlib.pyplot as plt
 import numpy as np
-
+import pandas as pd
+import time
 import config
 import utils
 
@@ -189,7 +190,7 @@ def demo_img_aug():
         plt.imshow(aug_img)
         plt.axis("off")
         
-def show_performance(history, predictions, X_train, y_train, X_test, y_test, show_detail=False, save_in_csv=False, note=""):
+def show_performance(history, predictions, X_train, y_train, X_test, y_test, classes, show_detail=False, save_in_csv=False, note=""):
     
     # Create tables,plots to show how good does it perform with the dataset
     # save_in_csv will decide whether to save the performance report in report_csv
@@ -199,7 +200,7 @@ def show_performance(history, predictions, X_train, y_train, X_test, y_test, sho
     y_true=np.argmax(y_test,axis=-1)
     cm = confusion_matrix(y_true=y_true,y_pred=y_pred)
     cm_container = utils.convert_cm_to_container(cm)
-    report = classification_report(y_true=y_true,y_pred=y_pred,target_names=DATA_CLASS)
+    report = classification_report(y_true=y_true,y_pred=y_pred,target_names=config.data_class)
     acc = history.history['accuracy']
     val_acc = history.history['val_accuracy']
     loss = history.history['loss']
@@ -208,21 +209,21 @@ def show_performance(history, predictions, X_train, y_train, X_test, y_test, sho
     if show_detail:
         print(report)
         utils.plot_acc_loss(acc,val_acc,loss,val_loss)
-        utils.plot_confusion_matrix(cm)
+        utils.plot_confusion_matrix(cm,classes)
         
     if save_in_csv:
-    history_report = pd.read_csv(config.report_csv_path)
-    history_report.loc[len(history_report)]=(time.ctime(time.time()),
-                                                model_name,
-                                                BATCH_SIZE,
-                                                epochs,
-                                                learning_rate,
-                                                report,
-                                                cm_container,
-                                                utils.convert_list_to_str(acc),
-                                                utils.convert_list_to_str(val_acc),
-                                                utils.convert_list_to_str(loss),
-                                                utils.convert_list_to_str(val_loss),
-                                                DATA_TYPE,
-                                                note)
-    history_report.to_csv(report_csv_path,index=False)
+        history_report = pd.read_csv(config.report_csv_path)
+        history_report.loc[len(history_report)]=(time.ctime(time.time()),
+                                                    config.model_name,
+                                                    config.batch_size,
+                                                    config.epochs,
+                                                    config.learning_rate,
+                                                    report,
+                                                    cm_container,
+                                                    utils.convert_list_to_str(acc),
+                                                    utils.convert_list_to_str(val_acc),
+                                                    utils.convert_list_to_str(loss),
+                                                    utils.convert_list_to_str(val_loss),
+                                                    config.data_type,
+                                                    note)
+        history_report.to_csv(config.report_csv_path,index=False)

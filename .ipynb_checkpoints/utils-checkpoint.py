@@ -5,9 +5,7 @@ import prettytable as pt
 import pandas as pd
 import numpy as np
 
-
-report_csv_path = "D:\\111project\\gitHub\\041-111project\\data\\history_report_CalcOnly.csv"
-
+import config
 
 def join_path(root:str , *params)-> str:
     # give root and folders / files will return a path in str
@@ -154,7 +152,7 @@ def convert_str_to_list(str_:str) -> list:
         list_.append(float(item))
     return list_
 
-def show_report(*nums,show_plot:bool=False):
+def show_report(*nums,report_csv_path=config.report_csv_path,show_plot:bool=False):
     #give nums to choose which data to show,CAN give multiplay nums at once
     #if want to print out all history better use for loop with it
     #show_plot will control whether to plot ConfusionMatrix or not

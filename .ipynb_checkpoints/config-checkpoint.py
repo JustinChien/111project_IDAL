@@ -1,4 +1,5 @@
 #Constants
+report_csv_path = "D:\\111project\\gitHub\\041-111project\\data\\history_report_CalcOnly.csv"
 IMG_DIR = "D:\\111project\\gitHub\\041-111project\\data\\Cropped_Calc_imgs"
 data_csv_path = {"ALL":"D:\\111project\\gitHub\\041-111project\\data\\Calc_ALL.csv",
                  "CC":"D:\\111project\\gitHub\\041-111project\\data\\Calc_CC.csv",
@@ -15,6 +16,6 @@ data_type = "CC" #options: ALL,CC,MLO,FULL_ALL,FULL_CC,FULL_MLO,CatnDog
 data_class = ['Benign','Malignant']
 model_name = "MobileNet" #Options: MobileNet,Inception,VGG,DenseNet
 learning_rate = 1e-05
-epochs = 10
+epochs = 5
 batch_size = 32
 show_detail = True
