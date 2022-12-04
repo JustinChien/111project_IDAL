@@ -10,12 +10,18 @@ import config
 X_dataset = list()
 
 
-def loading_imgs(IMG_DIR,IMG_SIZE,data_type,show_detail=False):
-# IMG_DIR is the path of the imgs' file
-# data_type will choose what data to load , options:ALL,CC,MLO,FULL_ALL,FULL_CC,FULL_MLO,CatnDog
-# ALL,CC,MLO refers to the Calc part of Cropped image dataset
-# FULL_ALL,FULL_CC,FULL_MLO refers to the Calc part of full image of CBIS-DDSM
-# CatnDog will load the dataset of cats and dogs as an example dataset for testing.
+def loading_imgs(IMG_SIZE=config.IMG_SIZE,data_type=config.data_type,show_detail=config.show_detail):
+    
+    # Beaware that data_type's options : ALL,CC,MLO  are refer to the Calc part of cropped image dataset
+    # And the options : FULL_ALL,FULL_CC,FULL_MLO are refer to the Calc part of full image of CBIS-DDSM
+    # option : CatnDog will load the dataset of cats and dogs as an example dataset for testing.
+    # params with "*" will read from config.py if not given
+    
+    # * data_type   : choose what data to load , options:ALL,CC,MLO,FULL_ALL,FULL_CC,FULL_MLO,CatnDog
+    # * IMG_SIZE    : the img_size you'll use for model
+    # * show_detail : whether to print out the info
+
+    IMG_DIR = config.IMG_DIR[data_type]
     if data_type == 'DognCat':
 
         df = pd.read_csv(config.data_csv_path[data_type])

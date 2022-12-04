@@ -8,17 +8,27 @@ import numpy as np
 import config
 
 def join_path(root:str , *params)-> str:
-    # give root and folders / files will return a path in str
+    
+    # root    : the root path for the join
+    # *params : a list of file and folders to add after the root path
+    
     temp = root
     for p in params:
         temp = os.path.join(temp,p)
     return temp
 
-#This will plot a binary or multiclass classification's confusion matrix
 def plot_confusion_matrix(cm, classes
                           ,normalize = False
                           ,title='Confusion matrix'
                           ,cmap=plt.cm.Blues):
+    # plot_confusion_matrix will plot a binary or multiclass classification's confusion matrix
+    
+    # cm        : confusion_matrix from sklearn.Confusion_Matrix
+    # classes   : the classes of cm
+    # normalize : whether to normalize the number
+    # title     : title of the plot
+    # cmap      : the heatmap color
+
     
     plt.figure(figsize=(6,6))
     plt.imshow(cm,interpolation='nearest',cmap=cmap)
@@ -47,7 +57,13 @@ def plot_confusion_matrix(cm, classes
     plt.xlabel('Predicted Label')
 
 def plot_multi_label_confusion_matrix(cm,classes,cmap=plt.cm.Blues) -> None:
-    #give the whole ConfusionMatrix and classes and it will plot it out
+    
+    # plot_multi_label_confusion_matrix will plot a multilabel classification's confusion matrix
+    
+    # cm        : confusion_matrix from sklearn.Confusion_Matrix
+    # classes   : the classes of cm
+    # cmap      : the heatmap color
+    
     fig,ax = plt.subplots(2,int(len(cm)/2))
     count = 0
     for a,b in itertools.product(range(2),range(int(len(cm)/2))):
@@ -74,7 +90,14 @@ def plot_multi_label_confusion_matrix(cm,classes,cmap=plt.cm.Blues) -> None:
         count += 1
 
 def plot_acc_loss(acc,val_acc,loss,val_loss):
-    #give values from fit history and it will plot out a graph
+    
+    # plot out the line chart of those values
+    
+    # acc : the accuracy from history
+    # val_acc : the validation_accuracy from history
+    # loss : the loss from history
+    # val_loss : the validation_loss from history
+    
     plt.figure(figsize=(8,8))
 
     plt.subplot(2,1,1)
@@ -96,7 +119,12 @@ def plot_acc_loss(acc,val_acc,loss,val_loss):
     plt.show()
 
 def plot_imgs(lots_imgs,lots_labels):
-    # give 9 imgs and 9 lables,it will plot it out
+    
+    # will plot the first 9 imgs
+    
+    # lots_imgs : the set of imgs you want to plot
+    # lots_labels : the labels from the imgs you want to plot
+    
     imgs = lots_imgs[:9]
     labels = lots_labels[:9]
     
@@ -108,7 +136,10 @@ def plot_imgs(lots_imgs,lots_labels):
         plt.axis("off")
 
 def convert_cm_to_container(cm):
-    #give it a Multilabel Confusion Matrix and it will store it in a str, ez for storing in csv
+
+    # shape a confusion matrix into a str of value seperate with "_" 
+    # cm : the confusion matrix you want to convert
+    
     cm_container = str()
     if len(cm)==2:
         for i ,j in itertools.product(range(len(cm)),range(2)):
@@ -119,7 +150,10 @@ def convert_cm_to_container(cm):
     return cm_container
 
 def convert_container_to_cm(cm_container):
-    #give it the str generate from function above,will return what it suppose to look like originally
+    
+    # convert a str from convert_cm_to_container() and reshape it back to the confusion matrix
+    # cm_container : the str from convert_cm_to_container()
+    
     temp = cm_container.split(sep="_")
     size = int((len(temp)-1)/4)
     # print(size)
@@ -140,12 +174,20 @@ def convert_container_to_cm(cm_container):
     return c_cm
 
 def convert_list_to_str(list_:list) -> str:
+    
+    # convert a list into a str of values seperate with "_"
+    # list : the list you want to convert
+    
     temp = str()
     for item in list_:
         temp += "{}_".format(item)
     return temp
 
 def convert_str_to_list(str_:str) -> list:
+    
+    # convert the str from convert_list_to_str() back to list
+    # str_ : the string from convert_list_to_str()
+    
     list_ = list()
     str_ = str_.split(sep='_')
     for item in str_[:-1]:
@@ -153,9 +195,14 @@ def convert_str_to_list(str_:str) -> list:
     return list_
 
 def show_report(*nums,report_csv_path=config.report_csv_path,show_plot:bool=False):
-    #give nums to choose which data to show,CAN give multiplay nums at once
-    #if want to print out all history better use for loop with it
-    #show_plot will control whether to plot ConfusionMatrix or not
+    
+    # it will read the report_csv and print out the data you choose
+    # params with "*" will read from config.py if not given
+    
+    # nums : the index of the data you want to print out
+    # * report_csv_path : the csv file's path
+    # * show_plot : whether to show the data's plot
+    
     temp = list()
     history_report = pd.read_csv(report_csv_path)
 
