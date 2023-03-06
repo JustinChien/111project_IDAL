@@ -5,6 +5,7 @@ from tensorflow.keras.layers import Dense,Conv2D,MaxPooling2D,Dropout,Flatten,Ba
 from keras.applications.vgg19 import VGG19,preprocess_input
 from tensorflow.keras.preprocessing import image
 from sklearn.metrics import multilabel_confusion_matrix,classification_report,confusion_matrix
+import keras_tuner
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -62,8 +63,9 @@ def create_model(units_1,
         prediction_layer = tf.keras.layers.Dense(len(data_class),activation="softmax")
 
         inputs = tf.keras.Input(shape=IMG_SIZE)
-        x = data_augmentation(inputs)
-        x = preprocess_input(x)
+        # x = data_augmentation(inputs)
+        x = preprocess_input(inputs)        
+        # x = preprocess_input(x)
         x = base_model(x)
         # Our FC layer
         flat1 = Flatten()(x)
@@ -73,12 +75,13 @@ def create_model(units_1,
         act1 = Activation(activation='relu')(batchnorm1)
         drop1 = Dropout(dropout_rate_1)(act1) #rate=0.5
 
-        dense1 = Dense(units=units_2, use_bias=True)(flat1) #units=32
-        batchnorm1 = BatchNormalization()(dense1)
-        act1 = Activation(activation='relu')(batchnorm1)
-        drop1 = Dropout(dropoout_rate_2)(act1) #rate=0.3
+        dense2 = Dense(units=units_2, use_bias=True)(drop1) #units=32
+        batchnorm2 = BatchNormalization()(dense2)
+        act2 = Activation(activation='relu')(batchnorm2)
+        drop2 = Dropout(dropout_rate_2)(act2) #rate=0.3
+
         # Output
-        out = Dense(units=2, activation='softmax')(drop1)
+        out = Dense(units=2, activation='softmax')(drop2)
 
         # Create Model
         model = Model(inputs=inputs, outputs=out)
@@ -86,6 +89,7 @@ def create_model(units_1,
         if show_detail == True:
             print("{}121 Model Created.".format(model_name))
             model.summary()
+        return model
 
     else:     
         #--- --- --- --- 分隔線 --- --- --- ---#        
@@ -145,6 +149,19 @@ def create_model(units_1,
 
         #--- --- --- --- 分隔線 --- --- --- ---#        
 
+        if model_name == "Xception": # ResNet152V2
+
+            #Rescale Pixel Values
+            preprocess_input = tf.keras.applications.xception.preprocess_input 
+
+            #MobileNet itself
+            base_model = tf.keras.applications.Xception(input_shape = IMG_SIZE,
+                                                        include_top=False,
+                                                        weights="imagenet")
+            base_model.trainable = False
+
+        #--- --- --- --- 分隔線 --- --- --- ---#            
+
             
         GAP2D_layer = tf.keras.layers.GlobalAveragePooling2D()
         flatten_layer = tf.keras.layers.Flatten()
@@ -165,9 +182,9 @@ def create_model(units_1,
 
         # # Assemble all together
         inputs = tf.keras.Input(shape=IMG_SIZE)
-        x = data_augmentation(inputs)
-        # x = preprocess_input(inputs)        
-        x = preprocess_input(x)
+        # x = data_augmentation(inputs)
+        x = preprocess_input(inputs)        
+        # x = preprocess_input(x)
         x = base_model(x,training=False)
         
         if use_GAP2D==True:
@@ -183,31 +200,6 @@ def create_model(units_1,
             model.summary()
         
         return model
-    
-def create_tuner_model(hp):
-    
-    # This function will use keras tuner to create a set of hyperparameters and pass to create_model()
-    # By doing so will make our old model tunable for keras tuner 
-    # btw create_model() will not compile model, so we compile it here!
-
-    units_1 = hp.Int("units_1",max_value=512,min_value=16,step=16)
-    units_2 = hp.Int("units_2",max_value=512,min_value=16,step=16)
-    dropout_rate_1 = hp.Float("dropout_rate_1",max_value=0.9,min_value=0)
-    dropout_rate_2 = hp.Float("dropout_rate_2",max_value=0.9,min_value=0)
-    learning_rate = hp.Float("Learning_Rate",max_value=0.1,min_value=1e-08,sampling="log")
-    use_GAP2D = hp.Boolean("use_GAP2D")
-
-    model = create_model(units_1=units_1,
-                         units_2=units_2,
-                         dropout_rate_1=dropout_rate_1,
-                         dropout_rate_2=dropout_rate_2,
-                         use_GAP2D=use_GAP2D)
-    
-    model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate= learning_rate),
-                  loss = tf.keras.losses.categorical_crossentropy, 
-                  metrics=["accuracy"])
-
-    return model
     
 def run_through(model, X_train, y_train, X_test, y_test, lr, epochs, BATCH_SIZE):
     
@@ -326,7 +318,10 @@ def load_model(show_detail = config.show_detail):
     for i in range(len(current_opt)):
         print("{}) : {}".format(i,current_opt[i]))
     try:    
-        model_ = keras.models.load_model(utils.join_path(models_path,current_opt[int(input("Pls choose the model you want:"))]))
+        input_ = input("Pls choose the model you want:")
+        if input_ == "exit" or input_ == "quit":
+            return
+        model_ = keras.models.load_model(utils.join_path(models_path,current_opt[int(input_)]))
     except:
         print("This file is not exist \ usable.")
         
@@ -337,7 +332,7 @@ def load_model(show_detail = config.show_detail):
     
     return model_
 
-def evaluate_model(model,X_train, X_test ,y_train , y_test):
+def evaluate_model(model,X_train ,y_train, X_test , y_test):
     
     # input a model and train\test data
     # will start a simplified evaluate 
@@ -360,3 +355,62 @@ def evaluate_model(model,X_train, X_test ,y_train , y_test):
     
     print(report)
     utils.plot_confusion_matrix(cm,classes=config.data_class)
+    
+    
+    
+    
+class TunerModel(keras_tuner.HyperModel):
+    def build(self,hp):
+        # This function will use keras tuner to create a set of hyperparameters and pass to create_model()
+        # By doing so will make create_model() tunable for keras tuner 
+        # btw create_model() will not compile model, so we compile it here!
+
+        units_1 = hp.Int("units_1",max_value=1024,min_value=16,step=16)
+        units_2 = hp.Int("units_2",max_value=1024,min_value=16,step=16)
+        dropout_rate_1 = hp.Float("dropout_rate_1",max_value=0.9,min_value=0)
+        dropout_rate_2 = hp.Float("dropout_rate_2",max_value=0.9,min_value=0)
+        learning_rate = hp.Float("Learning_Rate",max_value=0.1,min_value=1e-10,sampling="log")
+        use_GAP2D = hp.Boolean("use_GAP2D")
+
+        model = create_model(units_1=units_1,
+                             units_2=units_2,
+                             dropout_rate_1=dropout_rate_1,
+                             dropout_rate_2=dropout_rate_2,
+                             use_GAP2D=use_GAP2D,
+                             show_detail=False)
+
+        model.summary()
+        model.compile(optimizer = tf.keras.optimizers.Adam(learning_rate= learning_rate),
+                      loss = tf.keras.losses.categorical_crossentropy, 
+                      metrics=["accuracy"])
+
+        return model
+
+    def fit(self,hp,model, *args, **kwargs):
+        return model.fit(
+            *args,
+            batch_size=hp.Choice("batch_size",[16,32]),
+            **kwargs,
+        )
+
+def fine_tune(hp):
+    lr = hp.Float("learning_rate",max_value=1e-04,min_value=1e-10,sampling='log')
+    optimizer = hp.Choice("optimizer",['Nadam','Adamax','Adam','RMSprop'])
+    if optimizer == 'Nadam':
+        optimizer = keras.optimizers.Nadam
+    elif optimizer == 'Adamax':
+        optimizer = keras.optimizers.Adamax
+    elif optimizer == 'Adam':
+        optimizer = keras.optimizers.Adam
+    elif optimizer == 'RMSprop':
+        optimizer = keras.optimizers.RMSprop
+    models_path = "D:\\111project\\github\\041-111project\\data\\models"
+    current_opt = os.listdir(models_path)
+    model_ = keras.models.load_model(utils.join_path(models_path,current_opt[1]))
+    model_.build(input_shape=config.IMG_SIZE)
+    model_.trainable = True
+    
+    model_.compile(optimizer = optimizer(learning_rate= lr),
+              loss = tf.keras.losses.categorical_crossentropy, 
+              metrics=["accuracy"])
+    return model_

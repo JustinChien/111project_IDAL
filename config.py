@@ -23,7 +23,7 @@ R_SEED = 12
 #Variables
 data_type = "ROI" #options: ALL,CC,MLO,FULL_ALL,FULL_CC,FULL_MLO,CatnDog
 data_class = ['Benign','Malignant']
-model_name = "MobileNet" #Options: MobileNet,Inception,VGG,DenseNet,ResNet
+model_name = "VGG" #Options: MobileNet,Inception,VGG,DenseNet,ResNet
 learning_rate = 1e-05
 epochs = 30
 batch_size = 16
