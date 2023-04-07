@@ -22,7 +22,7 @@ def loading_imgs(IMG_SIZE=config.IMG_SIZE,data_type=config.data_type,show_detail
     # * show_detail : whether to print out the info
 
     IMG_DIR = config.IMG_DIR[data_type]
-    if data_type == 'DognCat':
+    if data_type == 'CatnDog':
 
         df = pd.read_csv(config.data_csv_path[data_type])
         for i in tqdm(range(df.shape[0])):

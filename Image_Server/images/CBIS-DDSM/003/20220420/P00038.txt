@@ -1,0 +1,4 @@
+This folder's(20220420) X-ray file were drawed with some
+grey dots on the breast tissue in order to test the function
+of our system. Please make sure that you're using the data
+you want.
