@@ -1,15 +1,13 @@
-# 041-111project
+# 國立宜蘭大學 資工系 IDAL實驗室 111學年度 專題
 
-NIU CSIE 111 IDAL lab 專題
+### 專題題目 : 基於深度學習與混合實境介面之乳癌辨識輔助診斷系統  
 
-Data : CBIS-DDSM
+團隊成員 : 簡名駿 B0943017, 王昱捷 B0943022, 郭又萓 B0943033, 張光猛 B0943048    
+指導教授 : 林斯寅 教授  
 
-We're trying to create a system that's able to asist Doc for Breast Cancer.
-Currently Breast Cancer can be treated well if found early, and with X-Ray Images
-we can found parts have a possibility to be a tumor.Yet there's another kind of
-abnormal symptoms called Calcification. It does have a pattern for us to recognize
-but size is the problem here.Calcification often form little white dots with a specific
-pattern,but those Malignant ones are way too small to found easily.That's why this
-project was start and the problem we're trying to solve.
+根據WHO的統計每年罹患乳癌的人數不斷增加，我們希望能夠使用所學來解決這項問題。  
+因此在教授安排下與陽大陳慶耀醫師討論後整理出了三項功能: 即時良惡性預測功能、病例比較功能、病例查詢功能。
 
-TeamMember :
+即時良惡性預測功能 : 使用CBIS-DDSM中的裁切圖做為訓練用資料、經過前處理後使用EfficientNet B7做遷移學習。  
+病例比較功能 : 使用OpenCV套件實作，仍在改善中。  
+病例查詢功能 : 從資料庫取得資料後在Hololens上呈現。  
