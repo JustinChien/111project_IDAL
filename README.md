@@ -13,6 +13,7 @@
 病例比較功能 : 使用OpenCV套件實作，仍在改善中。  
 病例查詢功能 : 從資料庫取得資料後在Hololens上呈現。  
 
+This project aims to develop a breast cancer diagnostic assistant system combining deep learning methods with a mixed reality interface. The system helps doctors perform breast cancer diagnosis by providing image analysis, comparison capabilities, and AI-powered predictions through Microsoft HoloLens 2.
 
 ## Key Features
 
